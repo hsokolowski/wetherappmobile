@@ -11,7 +11,8 @@ import { block } from 'react-native-reanimated';
 //var db = SQLite.openDatabase({ name: 'gsdb.db', createFromLocation: '~gsdb.db' });
 
 function HomeScreen({ navigation }) {
-  let date = new Date();
+  //let date = new Date();
+  const [date, setTime] = useState(new Date);
 
   var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   let dayName = days[date.getDay()];
@@ -25,8 +26,7 @@ function HomeScreen({ navigation }) {
   if (minutes < 10) minutes ='0'+ minutes;
   let seconds = date.getSeconds();
 
-  const [time, setTime] = useState(Date.now());
-
+  //const [time, setTime] = useState(Date.now());
   // useEffect(() => {
   //   const interval = setInterval(() => setTime(Date.now()), 1000);
   //   return () => {
@@ -35,7 +35,15 @@ function HomeScreen({ navigation }) {
   // }, []);
 
   function handleRefresh(){
-    console.log("refresh2")
+    let time = new Date();
+    //console.log(hours+ "-"+ time.getHours())
+    console.log(minutes+ "-"+ time.getMinutes())
+    if(minutes<time.getMinutes())
+    {
+      setTime(new Date())
+      console.log("refresh2 i strzał do api")
+    }
+
   }
 
   var favCity = "Bielsk Podlaski"
@@ -72,7 +80,7 @@ function HomeScreen({ navigation }) {
 
       </View>
       <Text>{key}</Text>
-      <Text>{hours}:{minutes}:{seconds} - {time}</Text>
+      <Text>{hours}:{minutes}:{seconds}</Text>
       <Text>Hubert</Text>
       <View>
           <Image source={require('../assets/gear.png')}
