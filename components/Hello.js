@@ -22,6 +22,7 @@ function HomeScreen({ navigation }) {
 
   let hours = date.getHours();
   let minutes = date.getMinutes();
+  if (minutes < 10) minutes ='0'+ minutes;
   let seconds = date.getSeconds();
 
   const [time, setTime] = useState(Date.now());
@@ -42,7 +43,7 @@ function HomeScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onLongPress={() => handleRefresh()} >
+      <TouchableOpacity  onLongPress={() => handleRefresh()} >
         <View style={styles.favCity}>
           <View style={styles.namCity}>
             <Image source={require('../assets/map-localization-icon.png')}
@@ -110,15 +111,13 @@ const styles = StyleSheet.create({
   namCity: {
     backgroundColor: '#f7f7f7',
     //backgroundColor: 'red',
-    justifyContent: "center",
+    //justifyContent: "center",
     alignItems: 'center',
-    alignContent: "center",
+    //alignContent: "center",
     flexDirection: "row",
     textAlign: "center",
     height: 55,
     width: '100%',
-    left: 0
-
   },
   favCity_text: {
     fontSize: 20,
