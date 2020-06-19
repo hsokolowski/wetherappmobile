@@ -5,23 +5,32 @@ import { ScrollView } from 'react-native-gesture-handler';
 function ImageClip({ name }) {
 
   let someImage =""
-  switch (name)
-  {
-    case 'p1':
-      someImage = require('../assets/pogoda/p1.gif');
-      break;
-    case 'p2':
-      someImage = require('../assets/pogoda/p2.gif');
-      break;
-    case 'p3':
-      someImage = require('../assets/pogoda/p3.gif');
-      break;
-    case 'p4':
-      someImage = require('../assets/pogoda/p4.gif');
-      break;
-
-    default:
-      someImage = require('../assets/pogoda/p0.gif');
+  if (name >= 200 && name <=233){
+    someImage = require('../assets/pogoda/r4.gif');
+  }
+  else if (name >= 300 && name <=302){
+    someImage = require('../assets/pogoda/p3.gif');
+  }
+  else if (name>=500 && name <=522){
+    someImage = require('../assets/pogoda/r3.gif');
+  }
+  else if (name>=600 && name <=612){
+    someImage = require('../assets/pogoda/r5.gif');
+  }
+  else if (name>=621 && name <=623){
+    someImage = require('../assets/pogoda/r6.gif');
+  }
+  else if ((name>=700 && name <=751) || name ==804){
+    someImage = require('../assets/pogoda/r1.gif');
+  }
+  else if ( name ==800){
+    someImage = require('../assets/pogoda/p1.gif');
+  }
+  else if (name>=801 && name <=803){
+    someImage = require('../assets/pogoda/r6.gif');
+  }
+  else{
+    someImage = require('../assets/pogoda/p0.gif');
   }
 
     return (

@@ -3,16 +3,23 @@ import React, { useState, useEffect } from 'react';
 import { View, Picker, Text, TouchableOpacity,SafeAreaView, TextInput, Image, Platform, StyleSheet, Alert } from 'react-native';
 import { ScrollView, FlatList } from 'react-native-gesture-handler';
 import firebase from '../firebase/firebase';
-import {key, api} from "../api/wetherbit"
+import {key, api, forecast} from "../api/wetherbit"
 import Icon from "./ImageClip"
 
 import DatePicker from 'react-native-datepicker';
-import { block } from 'react-native-reanimated';
+import { block, color } from 'react-native-reanimated';
 //var db = SQLite.openDatabase({ name: 'gsdb.db', createFromLocation: '~gsdb.db' });
 
 function HomeScreen({ navigation }) {
-  //let date = new Date();
+
   const [date, setTime] = useState(new Date);
+  const [favCity,setFavCity] = useState("Bielsk Podlaski")
+  const [country,setCountry] = useState("pl")
+  const [language,setLanguage] = useState("en")
+  const [weatherCode,setWeatherCode] = useState(900)
+  const [weatherDesc,setWeatherDescription] = useState("Słonecznie")
+  const [weather,setWeather] = useState(null)
+  const [temperatur,setTemperature] = useState(10)
 
   var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   let dayName = days[date.getDay()];
@@ -26,13 +33,19 @@ function HomeScreen({ navigation }) {
   if (minutes < 10) minutes ='0'+ minutes;
   let seconds = date.getSeconds();
 
-  //const [time, setTime] = useState(Date.now());
-  // useEffect(() => {
-  //   const interval = setInterval(() => setTime(Date.now()), 1000);
-  //   return () => {
-  //     clearInterval(interval);
-  //   };
-  // }, []);
+  async function getWeatherApiAsync() {
+    try {
+      let response = await fetch(
+        api+`?city=${favCity}&country=${country}&lang=${language}&key=${key}`
+      );
+      let json = await response.json();
+      console.log(json.data[0])
+      setWeather(json.data[0])
+      return json.data[0];
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   function handleRefresh(){
     let time = new Date();
@@ -42,12 +55,18 @@ function HomeScreen({ navigation }) {
     {
       setTime(new Date())
       console.log("refresh2 i strzał do api")
+      getWeatherApiAsync()
+      //console.log(weather.weather.description)
+      //const {temp ,weather} = weather
+
+      setTemperature(weather.temp)
+      setWeatherCode(weather.weather.code)
+      setWeatherDescription(weather.weather.description)
     }
 
   }
 
-  var favCity = "Bielsk Podlaski"
-  var weather = "p1"
+
 
   return (
     <View style={styles.container}>
@@ -68,29 +87,33 @@ function HomeScreen({ navigation }) {
               <Text>{dayName}, {day} {month} {hours}:{minutes} </Text>
             </View>
           <View style={styles.temp2}>
-            <Icon name={weather} />
-            <Text style={styles.favCity_text2}>17 C</Text>
+            <Icon name={weatherCode} />
+            <Text style={styles.favCity_text2}>{temperatur+"\u2103"}</Text>
           </View>
           <View>
-            <Text>Słonecznie</Text>
+            <Text>{weatherDesc}</Text>
           </View>
         </View>
       </TouchableOpacity>
-      <View style={styles.temp}>
-
-      </View>
-      <Text>{key}</Text>
-      <Text>{hours}:{minutes}:{seconds}</Text>
-      <Text>Hubert</Text>
-      <View>
+      <View style={styles.buttons}>
+        <TouchableOpacity style={styles.bnt_menu} onPress={() => navigation.navigate('Details')}>
+          <Text style={styles.bnt_menu_text}>FORECAST 16-DAY</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.bnt_menu}>
+          <Text style={styles.bnt_menu_text} onPress={() => navigation.navigate('List')}>WATCHLIST</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.bnt_menu_set}>
           <Image source={require('../assets/gear.png')}
-          style={{
-            width: 41,
-            height: 41,
-            resizeMode: 'contain',
-            right: 15,
-          }} />
-        </View>
+            style={{
+              width: 41,
+              height: 41,
+              resizeMode: 'contain',
+              right: 15,
+            }} />
+          <Text style={styles.bnt_menu_set_text} onPress={() => navigation.navigate('Settings')}>Settings</Text>
+        </TouchableOpacity>
+      </View>
+
     </View>
   );
 }
@@ -104,6 +127,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     textAlign: "center",
   },
+  buttons:{
+    marginTop: 30,
+    flex: 1,
+
+  },
   favCity: {
     padding: 10,
     backgroundColor: '#f7f7f7',
@@ -115,6 +143,38 @@ const styles = StyleSheet.create({
     height: 175,
     width: '100%',
 
+  },
+  bnt_menu:{
+    padding: 10,
+    color: '#f7f7f7',
+    backgroundColor: '#333',
+    justifyContent: "center",
+    alignItems: 'center',
+    textAlign: "center",
+    borderRadius: 20,
+    margin: 30,
+    padding: 20,
+  },
+  bnt_menu_set:{
+    borderWidth: 1,
+    borderColor:'#333',
+    padding: 10,
+    color:'#333',
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: 'center',
+    textAlign: "center",
+    borderRadius: 20,
+    marginLeft: 30,
+    marginRight: 30,
+    margin: 30,
+    padding: 10,
+  },
+  bnt_menu_set_text:{
+    fontWeight:"bold",
+  },
+  bnt_menu_text:{
+    color: '#f7f7f7',
   },
   namCity: {
     backgroundColor: '#f7f7f7',
