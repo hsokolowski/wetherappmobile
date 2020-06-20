@@ -18,7 +18,7 @@ function HomeScreen({ navigation }) {
   const [language,setLanguage] = useState("en")
   const [weatherCode,setWeatherCode] = useState(900)
   const [weatherDesc,setWeatherDescription] = useState("Słonecznie")
-  const [weather,setWeather] = useState(null)
+  const [weather,setWeather] = useState({weather:{temp: 10, code: 10, description: "A"}})
   const [temperatur,setTemperature] = useState(10)
 
   var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -32,6 +32,13 @@ function HomeScreen({ navigation }) {
   let minutes = date.getMinutes();
   if (minutes < 10) minutes ='0'+ minutes;
   let seconds = date.getSeconds();
+
+  // useEffect(() => {
+  //   getWeatherApiAsync()
+  //   setTemperature(weather.temp)
+  //   setWeatherCode(weather.weather.code)
+  //   setWeatherDescription(weather.weather.description)
+  // },[]);
 
   async function getWeatherApiAsync() {
     try {
@@ -51,7 +58,7 @@ function HomeScreen({ navigation }) {
     let time = new Date();
     //console.log(hours+ "-"+ time.getHours())
     console.log(minutes+ "-"+ time.getMinutes())
-    if(minutes<time.getMinutes())
+    //if(minutes<time.getMinutes())
     {
       setTime(new Date())
       console.log("refresh2 i strzał do api")
@@ -96,7 +103,10 @@ function HomeScreen({ navigation }) {
         </View>
       </TouchableOpacity>
       <View style={styles.buttons}>
-        <TouchableOpacity style={styles.bnt_menu} onPress={() => navigation.navigate('Details')}>
+        <TouchableOpacity style={styles.bnt_menu}>
+          <Text style={styles.bnt_menu_text} onPress={() => navigation.navigate('List')}>CHECK WEATHER</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.bnt_menu} onPress={() => navigation.navigate('Forecast')}>
           <Text style={styles.bnt_menu_text}>FORECAST 16-DAY</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.bnt_menu}>
@@ -128,9 +138,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   buttons:{
-    marginTop: 30,
+    marginBottom: 10,
     flex: 1,
-
+    //backgroundColor: 'red'
   },
   favCity: {
     padding: 10,
@@ -145,14 +155,17 @@ const styles = StyleSheet.create({
 
   },
   bnt_menu:{
-    padding: 10,
+    //padding: 10,
     color: '#f7f7f7',
     backgroundColor: '#333',
     justifyContent: "center",
     alignItems: 'center',
     textAlign: "center",
     borderRadius: 20,
-    margin: 30,
+    marginRight: 30,
+    marginLeft: 30,
+    marginTop: 30,
+    marginBottom: 10,
     padding: 20,
   },
   bnt_menu_set:{
