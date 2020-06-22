@@ -6,6 +6,7 @@ import DetailsScreen from '../components/Details';
 import ListScreen from '../components/List';
 import SettingsScreen from '../components/Settings';
 import ForecastScreen from '../components/Forecast';
+import CheckScreen from '../components/Check';
 
 const Stack = createStackNavigator({
   Hello: {screen: HomeScreen},
@@ -13,6 +14,7 @@ const Stack = createStackNavigator({
   List: {screen: ListScreen},
   Settings: {screen: SettingsScreen},
   Forecast: {screen: ForecastScreen},
+  Check: {screen: CheckScreen},
 });
 
 export default createAppContainer(Stack);

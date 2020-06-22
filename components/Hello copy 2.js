@@ -77,7 +77,7 @@ function HomeScreen({ navigation }) {
 
 
   return (
-    <View  style={styles.container}>
+    <View style={styles.container}>
       <TouchableOpacity  onLongPress={() => handleRefresh()} >
         <View style={styles.favCity}>
           <View style={styles.namCity}>
@@ -99,13 +99,13 @@ function HomeScreen({ navigation }) {
             <Text style={styles.favCity_text2}>{temperatur+"\u2103"}</Text>
           </View>
           <View>
-            <Text style={{fontSize: 24}}>{weatherDesc}</Text>
+            <Text>{weatherDesc}</Text>
           </View>
         </View>
       </TouchableOpacity>
       <View style={styles.buttons}>
         <TouchableOpacity style={styles.bnt_menu}>
-          <Text style={styles.bnt_menu_text} onPress={() => navigation.navigate('Check')}>CHECK WEATHER</Text>
+          <Text style={styles.bnt_menu_text} onPress={() => navigation.navigate('List')}>CHECK WEATHER</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.bnt_menu} onPress={() => navigation.navigate('Forecast')}>
           <Text style={styles.bnt_menu_text}>FORECAST 16-DAY</Text>
@@ -141,8 +141,7 @@ const styles = StyleSheet.create({
   buttons:{
     marginBottom: 10,
     flex: 1,
-    //backgroundColor: '#113255',
-    width: '100%',
+    //backgroundColor: 'red'
   },
   favCity: {
     padding: 10,
@@ -152,20 +151,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: "column",
     textAlign: "center",
-    height: 210,
+    height: 200,
     width: '100%',
 
   },
   bnt_menu:{
-
-    //color: '#f7f7f7',
+    //padding: 10,
+    color: '#f7f7f7',
     backgroundColor: '#333',
     justifyContent: "center",
     alignItems: 'center',
     textAlign: "center",
     borderRadius: 20,
-    marginRight: 90,
-    marginLeft: 90,
+    marginRight: 30,
+    marginLeft: 30,
     marginTop: 30,
     marginBottom: 10,
     padding: 20,
@@ -180,8 +179,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     textAlign: "center",
     borderRadius: 20,
-    marginLeft: 90,
-    marginRight: 90,
+    marginLeft: 30,
+    marginRight: 30,
     margin: 30,
     padding: 10,
   },
@@ -190,7 +189,6 @@ const styles = StyleSheet.create({
   },
   bnt_menu_text:{
     color: '#f7f7f7',
-    //color:'#68ff9b',
   },
   namCity: {
     backgroundColor: '#f7f7f7',

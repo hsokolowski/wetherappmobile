@@ -1,9 +1,10 @@
 /* eslint-disable prettier/prettier */
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, FlatList, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, Image, FlatList, TouchableOpacity, StyleSheet, ImageBackground } from 'react-native';
 import firebase from '../firebase/firebase';
 import {key, api, forecast} from "../api/wetherbit"
 import Icon from "./ImageClip"
+
 
 
 function ForecastScreen({ navigation }) {
@@ -15,6 +16,7 @@ function ForecastScreen({ navigation }) {
     const [language,setLanguage] = useState("en")
 
     const customData = require('../api/dump.json');
+    const image =  require("../assets/itembg.png" );
 
     useEffect(() => {
       setDays(customData.data)
@@ -73,32 +75,41 @@ function ForecastScreen({ navigation }) {
         let weatherCode =weather.weather.code;
         var date = new Date(weather.datetime);
         var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        let dayName = days[date.getDay()].substr(0,3);
+        let dayName = days[date.getDay()];
 
         return (
             <TouchableOpacity onPress={() => {
                 console.log('push');
                 navigation.navigate('Details',weather);
             }}>
+
                 <View style={styles.container} >
+                  <ImageBackground source={image} style={styles.image}>
                     <View style={styles.item}>
-                        <Text >{dayName}, {date.getDate()}</Text>
-                        <Text style={{fontWeight:"bold", fontSize: 30}}>{weather.temp+"\u2103"}</Text>
-                        <Icon name={weatherCode} />
-                        <View style={{justifyContent:"center", alignContent: "center"}}>
-                          <Image style={styles.tinyLogo} source={GetWaterPopIcon(weather.pop)}/>
-                          <Text>{weather.pop}%</Text>
+                        <View style={styles.item_inside1}>
+                          <Text style={{color:'white'}}>{dayName}, {date.getDate()}</Text>
+                          <Text style={{fontWeight:"bold", fontSize: 30, color:'#68ff9b'}}>{weather.temp+"\u2103"}</Text>
+                        </View>
+                        <View style={styles.item_inside2}>
+                          <Icon name={weatherCode} />
+                          <View style={{justifyContent:"center", alignContent: "center"}}>
+                            <Image style={styles.tinyLogo} source={GetWaterPopIcon(weather.pop)}/>
+                            <Text>{weather.pop}%</Text>
+                          </View>
                         </View>
 
+
                     </View>
+                    </ImageBackground>
                 </View>
+
             </TouchableOpacity >
         );
     }
 
     return (
         //<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' , backgroundColor: '#0131ba'}}>
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' , backgroundColor: '#0f2a47'}}>
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' , backgroundColor: '#f3f3f3'}}>
             {/* <View style={styles.title}> */}
               {/* <Button
                   title="Go to Home"
@@ -111,7 +122,7 @@ function ForecastScreen({ navigation }) {
                   //onPress={() => console.log(customData.data)}
               />
             </View> */}
-            <Text>FORECAST 16-DAY</Text>
+            {/* <Text>FORECAST 16-DAY</Text> */}
 
             <FlatList
                 style={{ marginTop: 15 }}
@@ -132,12 +143,13 @@ const styles = StyleSheet.create({
         flex: 1,
         //borderColor: '#333',
         borderColor: '#113255',
-        backgroundColor: '#f7f7f7',
+        //backgroundColor: '#f7f7f7',
         borderWidth: 2,
-        paddingBottom: 5,
-        paddingTop:5,
-        paddingRight: 10,
-        paddingLeft: 10,
+        // paddingBottom: 5,
+        // paddingTop:5,
+        // paddingRight: 10,
+        // paddingLeft: 10,
+        overflow: 'hidden',
         textAlign: 'center',
         borderRadius: 15,
         marginBottom: 10,
@@ -145,6 +157,14 @@ const styles = StyleSheet.create({
     },
     tinyLogo: {
       width: 30, height: 30, overflow: 'hidden'
+    },
+    image: {
+      flex: 1,
+      justifyContent: "center",
+      resizeMode: 'stretch' ,
+      resizeMode: 'cover' ,
+      width: '100%',
+      height: '100%'
     },
     title :{
         padding: 10,
@@ -158,7 +178,18 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        width: 300,
+        width: 320,
         padding: 10,
+    },
+    item_inside1:{
+      flex:1,
+      flexDirection: 'column',
+      width: '60%',
+    },
+    item_inside2:{
+      flex:1,
+      flexDirection: 'row',
+      width: '40%',
+      justifyContent: "flex-end",
     },
 });
