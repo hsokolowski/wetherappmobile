@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Picker, Text, TouchableOpacity,SafeAreaView, TextInput, Image, Platform, StyleSheet, Alert } from 'react-native';
 import { ScrollView, FlatList } from 'react-native-gesture-handler';
+import Toast from 'react-native-simple-toast';
 import firebase from '../firebase/firebase';
 import {key, api, forecast} from "../api/wetherbit"
 import Icon from "./ImageClip"
@@ -64,7 +65,7 @@ function HomeScreen({ navigation }) {
       console.log("refresh2 i strzał do api")
       getWeatherApiAsync()
       //console.log(weather.weather.description)
-      //const {temp ,weather} = weather
+      Toast.show('The weather is up to date.', Toast.SHORT, Toast.TOP);
 
       setTemperature(weather.temp)
       setWeatherCode(weather.weather.code)
@@ -150,7 +151,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: "column",
     textAlign: "center",
-    height: 175,
+    height: 200,
     width: '100%',
 
   },
@@ -217,10 +218,10 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   temp2: {
-    top: 0,
     flexDirection: "row",
     alignItems: "center",
     fontSize: 25,
     fontWeight: "bold",
+    //backgroundColor: 'green'
   }
 });

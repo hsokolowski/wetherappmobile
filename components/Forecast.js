@@ -1,8 +1,9 @@
 /* eslint-disable prettier/prettier */
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, FlatList, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, Image, FlatList, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import firebase from '../firebase/firebase';
 import {key, api, forecast} from "../api/wetherbit"
+import Icon from "./ImageClip"
 
 
 function ForecastScreen({ navigation }) {
@@ -13,17 +14,14 @@ function ForecastScreen({ navigation }) {
     const [country,setCountry] = useState("pl")
     const [language,setLanguage] = useState("en")
 
-    Date.prototype.addDays = function(days) {
-      var date = new Date(this.valueOf());
-      date.setDate(date.getDate() + days);
-      return date;
-    }
+    const customData = require('../api/dump.json');
 
-    var date = new Date();
-
+    useEffect(() => {
+      setDays(customData.data)
+    },[]);
     // useEffect(() => {
     //   getWeatherApiAsync()
-    // },[days]);
+    // },[]);
 
     async function getWeatherApiAsync() {
       try {
@@ -63,20 +61,35 @@ function ForecastScreen({ navigation }) {
         }))
     }
 
+    function GetWaterPopIcon(pop)
+    {
+      if(pop < 21) return require('../assets/water-drop1.png')
+      else if(pop < 50) return require('../assets/water-drop.png')
+      else if(pop < 80) return require('../assets/water-drop2.png')
+      else return require('../assets/water-drop3.png')
+    }
 
-    function Item({ car }) {
-        // var date = new Date(car.datetime);
-        // var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        // let dayName = days[date.getDay()];
+    function Item({ weather }) {
+        let weatherCode =weather.weather.code;
+        var date = new Date(weather.datetime);
+        var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        let dayName = days[date.getDay()].substr(0,3);
+
         return (
             <TouchableOpacity onPress={() => {
                 console.log('push');
-                navigation.navigate('Details',car);
+                navigation.navigate('Details',weather);
             }}>
                 <View style={styles.container} >
                     <View style={styles.item}>
-                        <Text style={{fontWeight:"bold"}}>{car.datetime} {car.temp}</Text>
-                        {/* <Text style={styles.burn}> {car.burn}l </Text> */}
+                        <Text >{dayName}, {date.getDate()}</Text>
+                        <Text style={{fontWeight:"bold", fontSize: 30}}>{weather.temp+"\u2103"}</Text>
+                        <Icon name={weatherCode} />
+                        <View style={{justifyContent:"center", alignContent: "center"}}>
+                          <Image style={styles.tinyLogo} source={GetWaterPopIcon(weather.pop)}/>
+                          <Text>{weather.pop}%</Text>
+                        </View>
+
                     </View>
                 </View>
             </TouchableOpacity >
@@ -84,20 +97,26 @@ function ForecastScreen({ navigation }) {
     }
 
     return (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        //<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' , backgroundColor: '#0131ba'}}>
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' , backgroundColor: '#0f2a47'}}>
+            {/* <View style={styles.title}> */}
+              {/* <Button
+                  title="Go to Home"
+                  onPress={() => navigation.navigate('Add')}
+              />
+              <Button
+                  title="Pobierz dane"
+                  //onPress={() => getWeatherApiAsync()}
+                  onPress={() => setDays(customData.data)}
+                  //onPress={() => console.log(customData.data)}
+              />
+            </View> */}
             <Text>FORECAST 16-DAY</Text>
-            <Button
-                title="Go to Home"
-                onPress={() => navigation.navigate('Add')}
-            />
-            <Button
-                title="Pobierz dane"
-                onPress={() => getWeatherApiAsync()}
-            />
+
             <FlatList
                 style={{ marginTop: 15 }}
                 data={days}
-                renderItem={({ item }) => <Item car={item} />}
+                renderItem={({ item }) => <Item weather={item} />}
                 keyExtractor={item => item.datetime}
                 key = {item => item.datetime}
             />
@@ -111,14 +130,23 @@ export default ForecastScreen;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: 'powderblue',
-        padding: 10,
+        //borderColor: '#333',
+        borderColor: '#113255',
+        backgroundColor: '#f7f7f7',
+        borderWidth: 2,
+        paddingBottom: 5,
+        paddingTop:5,
+        paddingRight: 10,
+        paddingLeft: 10,
         textAlign: 'center',
         borderRadius: 15,
         marginBottom: 10,
         fontWeight: 'bold',
     },
-    burn :{
+    tinyLogo: {
+      width: 30, height: 30, overflow: 'hidden'
+    },
+    title :{
         padding: 10,
         color: 'black',
         fontWeight:'bold',
@@ -130,7 +158,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        width: 200,
+        width: 300,
         padding: 10,
     },
 });

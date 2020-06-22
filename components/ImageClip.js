@@ -35,14 +35,14 @@ function ImageClip({ name }) {
 
     return (
 
-    <View style={{ width: 50, height: 50, overflow: 'hidden' }}>
+    <View style={{ width: 80, height: 80, overflow: 'hidden', justifyContent: 'center', alignItems: 'center'}}>
       {/* <Text>{posx}:{posy}</Text> */}
       <Image
         source={someImage}
         resizeMode={'contain'}
         style={{
-          height: 50,
-          width: 50,
+          height: 80,
+          width: 80,
 
         }} //position of image you want display.
       />
