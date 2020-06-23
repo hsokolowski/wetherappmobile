@@ -4,6 +4,7 @@ import { View, Text, Image, FlatList, TouchableOpacity, StyleSheet, ImageBackgro
 import firebase from '../firebase/firebase';
 import {key, api, forecast} from "../api/wetherbit"
 import Icon from "./ImageClip"
+import WeatherIcon from "./WeatherIcon"
 
 
 
@@ -91,7 +92,8 @@ function ForecastScreen({ navigation }) {
                           <Text style={{fontWeight:"bold", fontSize: 30, color:'#68ff9b'}}>{weather.temp+"\u2103"}</Text>
                         </View>
                         <View style={styles.item_inside2}>
-                          <Icon name={weatherCode} />
+                          {/* <Icon name={weatherCode} /> */}
+                          <WeatherIcon name={weather.weather.icon} />
                           <View style={{justifyContent:"center", alignContent: "center"}}>
                             <Image style={styles.tinyLogo} source={GetWaterPopIcon(weather.pop)}/>
                             <Text>{weather.pop}%</Text>

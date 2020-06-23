@@ -10,11 +10,19 @@ import Icon from "./ImageClip"
 
 function CheckScreen({ navigation }) {
   const [value, onChangeText] = useState('')
-  const [country, SetCountry] = useState(null)
+  const [country, SetCountry] = useState('')
+  const [countryCode, SetCountryCode] = useState(null)
 
-  function handleSetCountry(country){
-    console.log("wybrany kod "+ country)
-    SetCountry(country)
+  function handleSetCountry(countryCode){
+    console.log("wybrany kod "+ countryCode)
+    SetCountryCode(countryCode)
+    countriesWithCodes.forEach(element => {
+      if(element.country_code == countryCode)
+      {
+        SetCountry(element.country_name)
+        console.log(element.country_name)
+      }
+    });
   }
 
   function getWeather(){
@@ -41,10 +49,11 @@ function CheckScreen({ navigation }) {
             />
             <View  style={{width: '100%', borderColor: '#113255', borderWidth: 2, borderRadius: 10 , backgroundColor: '#f3f3f3', overflow: 'hidden'}}>
             <Picker
-                selectedValue={country}
+                selectedValue={countryCode}
 
                 onValueChange={(itemValue, itemIndex) =>
                   handleSetCountry(itemValue)
+                  //SetCountryCode(itemValue)
                 }>
                 {pickers}
             </Picker>
