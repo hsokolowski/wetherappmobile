@@ -2,10 +2,12 @@
 import React, { useState, useEffect } from 'react';
 import { View, Picker, Text, TouchableOpacity,SafeAreaView, TextInput, Image, Platform, StyleSheet, Alert } from 'react-native';
 import { ScrollView, FlatList } from 'react-native-gesture-handler';
+import { LinearGradient } from 'expo-linear-gradient';
 import Toast from 'react-native-simple-toast';
 import firebase from '../firebase/firebase';
 import {key, api, forecast} from "../api/wetherbit"
 import Icon from "./ImageClip"
+import WeatherIcon from './WeatherIcon'
 
 import DatePicker from 'react-native-datepicker';
 import { block, color } from 'react-native-reanimated';
@@ -68,7 +70,7 @@ function HomeScreen({ navigation }) {
       Toast.show('The weather is up to date.', Toast.SHORT, Toast.TOP);
 
       setTemperature(weather.temp)
-      setWeatherCode(weather.weather.code)
+      setWeatherCode(weather.weather.icon)
       setWeatherDescription(weather.weather.description)
     }
 
@@ -78,28 +80,30 @@ function HomeScreen({ navigation }) {
 
   return (
     <View  style={styles.container}>
+      <LinearGradient colors={['#4c669f', '#3b5998', '#192f6a']} style={{flex: 1, overflow: "hidden", margin: 0, width: 400,paddingTop: 20,}}>
       <TouchableOpacity  onLongPress={() => handleRefresh()} >
         <View style={styles.favCity}>
           <View style={styles.namCity}>
-            <Image source={require('../assets/map-localization-icon.png')}
-            style={{
+            <Image source={require('../assets/map-localization-icon-white.png')}
+            style={[{
               width: 31,
               height: 31,
               resizeMode: 'contain',
-            }} />
+            },styles.text_shadow]} />
             <View>
-              <Text style={styles.favCity_text}>{favCity}</Text>
+              <Text style={[styles.favCity_text,styles.text_shadow]}>{favCity}</Text>
             </View>
           </View>
             <View style={styles.temp}>
-              <Text>{dayName}, {day} {month} {hours}:{minutes} </Text>
+              <Text style={[{color: 'white',},styles.text_shadow]}>{dayName}, {day} {month} {hours}:{minutes} </Text>
             </View>
           <View style={styles.temp2}>
-            <Icon name={weatherCode} />
-            <Text style={styles.favCity_text2}>{temperatur+"\u2103"}</Text>
+            {/* <Icon name={weatherCode} /> */}
+            <WeatherIcon name={weatherCode} />
+            <Text style={[styles.favCity_text2,styles.text_shadow]}>{temperatur+"\u2103"}</Text>
           </View>
           <View>
-            <Text style={{fontSize: 24}}>{weatherDesc}</Text>
+            <Text style={[{fontSize: 24, color: 'white',},styles.text_shadow]}>{weatherDesc}</Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -114,7 +118,7 @@ function HomeScreen({ navigation }) {
           <Text style={styles.bnt_menu_text} onPress={() => navigation.navigate('List')}>WATCHLIST</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.bnt_menu_set}>
-          <Image source={require('../assets/gear.png')}
+          <Image source={require('../assets/gear-white.png')}
             style={{
               width: 41,
               height: 41,
@@ -124,7 +128,7 @@ function HomeScreen({ navigation }) {
           <Text style={styles.bnt_menu_set_text} onPress={() => navigation.navigate('Settings')}>Settings</Text>
         </TouchableOpacity>
       </View>
-
+      </LinearGradient>
     </View>
   );
 }
@@ -134,7 +138,8 @@ export default HomeScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f7f7f7',
+    //backgroundColor: '#f7f7f7',
+    // backgroundColor: '#113255',
     alignItems: "center",
     textAlign: "center",
   },
@@ -146,7 +151,7 @@ const styles = StyleSheet.create({
   },
   favCity: {
     padding: 10,
-    backgroundColor: '#f7f7f7',
+    //backgroundColor: '#f7f7f7',
     //backgroundColor: 'red',
     justifyContent: "space-between",
     alignItems: 'center',
@@ -154,27 +159,29 @@ const styles = StyleSheet.create({
     textAlign: "center",
     height: 210,
     width: '100%',
-
+    marginBottom: 50
   },
   bnt_menu:{
 
     //color: '#f7f7f7',
-    backgroundColor: '#333',
+    //backgroundColor: '#333',
+    backgroundColor: '#113255',
     justifyContent: "center",
     alignItems: 'center',
     textAlign: "center",
     borderRadius: 20,
     marginRight: 90,
     marginLeft: 90,
-    marginTop: 30,
+    marginTop: 10,
     marginBottom: 10,
     padding: 20,
   },
   bnt_menu_set:{
     borderWidth: 1,
-    borderColor:'#333',
+    //borderColor:'#333',
+    borderColor:'white',
     padding: 10,
-    color:'#333',
+    //color:'#333',
     flexDirection: "row",
     justifyContent: "center",
     alignItems: 'center',
@@ -182,36 +189,40 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     marginLeft: 90,
     marginRight: 90,
-    margin: 30,
+    margin: 10,
     padding: 10,
   },
   bnt_menu_set_text:{
     fontWeight:"bold",
+    color:'white',
   },
   bnt_menu_text:{
-    color: '#f7f7f7',
+    //color: '#f7f7f7',
+    color:'white',
     //color:'#68ff9b',
   },
   namCity: {
-    backgroundColor: '#f7f7f7',
+    //backgroundColor: '#f7f7f7',
     //backgroundColor: 'red',
-    //justifyContent: "center",
+    justifyContent: "center",
     alignItems: 'center',
-    //alignContent: "center",
+    alignContent: "center",
     flexDirection: "row",
     textAlign: "center",
     height: 55,
     width: '100%',
   },
   favCity_text: {
-    fontSize: 20,
+    fontSize: 25,
     fontWeight: "bold",
-    left: 0
+    left: 10,
+    color: 'white',
   },
   favCity_text2: {
     //backgroundColor: 'green',
-    fontSize: 40,
+    fontSize: 60,
     fontWeight: "bold",
+    color: 'white',
   },
   temp:{
     flex: 2,
@@ -223,7 +234,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     fontSize: 25,
+    color: 'white',
     fontWeight: "bold",
     //backgroundColor: 'green'
+  },
+  text_shadow:{
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: {width: -1, height: 1},
+    textShadowRadius: 10
   }
 });
