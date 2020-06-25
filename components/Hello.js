@@ -85,11 +85,11 @@ function HomeScreen({ navigation }) {
         <View style={styles.favCity}>
           <View style={styles.namCity}>
             <Image source={require('../assets/map-localization-icon-white.png')}
-            style={[{
+            style={{
               width: 31,
               height: 31,
               resizeMode: 'contain',
-            },styles.text_shadow]} />
+            }} />
             <View>
               <Text style={[styles.favCity_text,styles.text_shadow]}>{favCity}</Text>
             </View>

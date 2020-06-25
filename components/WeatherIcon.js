@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Picker, Text, TouchableOpacity, TextInput, Image, Platform, StyleSheet, Alert } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 
-function WeatherIcon({ name }) {
+function WeatherIcon({ name, size }) {
 
   let someImage =""
   if (name == 'a01d'){
@@ -197,17 +197,20 @@ function WeatherIcon({ name }) {
   else if (name == 'u00n'){
     someImage = require('../assets/icons/u00n.png');
   }
-
+  else {
+    someImage = require('../assets/pogoda/p0.gif');
+  }
+  let _size = (size !== undefined) ? size : 80
     return (
 
-    <View style={{ width: 80, height: 80, overflow: 'hidden', justifyContent: 'center', alignItems: 'center'}}>
+    <View style={{ width: _size, height: _size, overflow: 'hidden', justifyContent: 'center', alignItems: 'center'}}>
       {/* <Text>{posx}:{posy}</Text> */}
       <Image
         source={someImage}
         resizeMode={'contain'}
         style={{
-          height: 80,
-          width: 80,
+          height: _size,
+          width: _size,
 
         }} //position of image you want display.
       />
