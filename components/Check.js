@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, Image, SafeAreaView, ScrollView, TouchableOpacity, StyleSheet, TextInput, ImageBackground, } from 'react-native';
 import firebase from '../firebase/firebase';
 import { key, api, forecast } from "../api/wetherbit"
@@ -28,12 +28,11 @@ function CheckScreen({ navigation }) {
       let json = await response.json();
       //console.log(json.data[0])
       SetWeather(json.data[0])
-      if(json.data[0].pod == 'd') 
-      {
+      if (json.data[0].pod == 'd') {
         image = require('../assets/day.png')
         SetIsDay(true)
       }
-      else{
+      else {
         image = require('../assets/night.png')
         SetIsDay(false)
       }
@@ -45,10 +44,8 @@ function CheckScreen({ navigation }) {
   }
 
   function CityWeather({ weather }) {
-    console.log(weather.pod)
-    console.log(typeof(weather.pod ))
     let image = (weather.pod == "d") ? require('../assets/day.png') : require('../assets/night.png')
-    console.log(image)
+
     let weatherCode = weather.weather.code;
     var date = new Date(weather.datetime);
     var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -59,28 +56,30 @@ function CheckScreen({ navigation }) {
         console.log('push');
         //navigation.navigate('Details', weather);
       }}>
-        
+
         <View style={styles.details} >
-        <ImageBackground source={image} style={styles.image}>
+          <ImageBackground source={image} style={styles.image}>
             <View style={styles.details_top}>
               <WeatherIcon name={weather.weather.icon} size={100} />
               <View>
                 <Text style={isDay ? styles.day : styles.night}>{weather.temp + "\u2103"}</Text>
+                <Image source={require('../assets/lon-lat.png')}
+                  style={{
+                    width: 61,
+                    height: 61,
+                    resizeMode: 'contain',
+                  }} />
               </View>
             </View>
             <View style={styles.details_bottom}></View>
-            <Image source={require('../assets/lon-lat.png')}
-              style={{
-                width: 61,
-                height: 61,
-                resizeMode: 'contain',
-              }} />
+            
             <Text style={isDay ? styles.day : styles.night}>Longitude: {weather.lon}</Text>
             <Text style={isDay ? styles.day : styles.night}>Latitude : {weather.lat}</Text>
+            <Text style={isDay ? styles.day : styles.night}>Timezone : {weather.timezone}</Text>
             <Text style={isDay ? styles.day : styles.night}>Pressure : {weather.pres} hPa</Text>
-            </ImageBackground>
-          </View>
-        
+          </ImageBackground>
+        </View>
+
       </TouchableOpacity >
     );
   }
@@ -90,10 +89,11 @@ function CheckScreen({ navigation }) {
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
         <View style={{ flex: 1, alignItems: 'center', backgroundColor: '#113255' }}>
-          <LinearGradient colors={!isReady ? ['#4c669f', '#3b5998', '#192f6a'] : isDay ? ['#4c669f', '#3b5998', '#bee6ee'] : ['#4c669f', '#3b5998', 'black']} 
-          style={{flex: 1,
-            margin: 0, width: 400, paddingTop: 10, justifyContent: "center", alignContent: "center", alignItems: "center"
-          }}>
+          <LinearGradient colors={!isReady ? ['#4c669f', '#3b5998', '#192f6a'] : isDay ? ['#4c669f', '#3b5998', '#bee6ee'] : ['#4c669f', '#3b5998', 'black']}
+            style={{
+              flex: 1,
+              margin: 0, width: 400, paddingTop: 10, justifyContent: "center", alignContent: "center", alignItems: "center"
+            }}>
             <View style={{ justifyContent: 'center', alignItems: "center", alignContent: "center" }}>
               <View style={{ alignItems: 'center', justifyContent: 'space-around', width: 320, padding: 10, flexDirection: "column" }}>
                 <TextInput
@@ -124,16 +124,22 @@ function CheckScreen({ navigation }) {
                 <Text style={{ textAlign: "center", color: 'white' }} onPress={() => getWeatherApiAsync()}>SHOW WEATHER</Text>
               </TouchableOpacity>
             </View>
-            <View style={{ flex: 1, alignItems: 'center', alignContent: "center", justifyContent: "center", height: 470}}>
-            {!isReady ? <View /> : <Image source={require('../assets/arrows.png')}
-                style={{
-                  width: 61,
-                  height: 61,
-                  resizeMode: 'contain',
-                }} />}
+            <View style={{ flex: 1, alignItems: 'center', alignContent: "center", justifyContent: "center", height: 470 }}>
+              {!isReady ? <View /> :
+                <TouchableOpacity onPress={() => {
+                  console.log('arrow');
+                  () => {this.scrollView.scrollToEnd()}
+                }}>
+                  <Image source={require('../assets/arrows.png')}
+                    style={{
+                      width: 61,
+                      height: 61,
+                      resizeMode: 'contain',
+                    }} />
+                </TouchableOpacity>}
             </View>
           </LinearGradient>
-          {!isReady ? <View /> : <CityWeather weather={weather} />}
+          {!isReady ? <View /> : <CityWeather weather={weather} ref={scrollView => this.scrollView = scrollView}/>}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -157,13 +163,16 @@ const styles = StyleSheet.create({
     height: 360
   },
   details_top: {
+    borderTopWidth: 3,
+    borderColor: 'white',
+    marginTop: 150,
     flexDirection: "row",
     //backgroundColor: 'red',
   },
   image: {
     //flex: 1,
     width: '100%',
-    overflow: 'hidden',
+    //overflow: 'hidden',
     resizeMode: "cover",
     aspectRatio: 1,
   },
