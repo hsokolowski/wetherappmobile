@@ -43,6 +43,18 @@ function CheckScreen({ navigation }) {
     }
   }
 
+  function addToWatchList(){
+    console.log("add to db")
+    var key = firebase.database().ref('/cities').push().key
+
+    let city = {
+      city_name : value,
+      country_code: countryCode
+    }
+
+    firebase.database().ref('/cities').child(key).set(city);
+  }
+
   function CityWeather({ weather }) {
     let image = (weather.pod == "d") ? require('../assets/day.png') : require('../assets/night.png')
 
@@ -54,31 +66,75 @@ function CheckScreen({ navigation }) {
     return (
       <TouchableOpacity onPress={() => {
         console.log('push');
-        //navigation.navigate('Details', weather);
+        navigation.navigate('Details', { weather });
       }}>
 
-        <View style={styles.details} >
-          <ImageBackground source={image} style={styles.image}>
-            <View style={styles.details_top}>
-              <WeatherIcon name={weather.weather.icon} size={100} />
+        <LinearGradient colors={isDay ? ['#bee6ee', '#4c669f'] : ['black', 'grey']} style={[styles.details]} >
+          {/* <ImageBackground source={image} style={styles.image}> */}
+          <View style={styles.details_top}>
+            <Text style={[isDay ? styles.day : styles.night, { textAlign: "center", fontSize: 25 }, styles.text_shadow]}>{isDay ? 'Day' : 'Night'} in {value}, {countryCode}</Text>
+            <View style={{ justifyContent: "center", alignContent: "center", alignItems: "center" }}>
+              <View style={{ flexDirection: "row", justifyContent: "center", alignContent: "center", alignItems: "center" }}>
+                <WeatherIcon name={weather.weather.icon} size={100} />
+                <Text style={[isDay ? styles.day : styles.night, { fontSize: 60, fontWeight: "bold" }, styles.text_shadow]}>{weather.temp + "\u2103"}</Text>
+              </View>
               <View>
-                <Text style={isDay ? styles.day : styles.night}>{weather.temp + "\u2103"}</Text>
-                <Image source={require('../assets/lon-lat.png')}
+                <Text style={[isDay ? styles.day : styles.night, { fontSize: 30, }, styles.text_shadow]}>{weather.weather.description}</Text>
+              </View>
+            </View>
+          </View>
+          <View style={styles.details_bottom}>
+            <LinearGradient colors={isDay ? ['#4c669f', 'black'] : ['#bee6ee', '#4c669f']} style={[styles.geo, { overflow: "hidden" }]}>
+              <Text style={[!isDay ? styles.day : styles.night, { fontWeight: "bold", fontSize: 30, textAlign: "center", borderBottomWidth: 2, borderColor: isDay ? 'black' : 'white' }, styles.text_shadow]}>GEOLOCALIZATION</Text>
+              <View style={{ flexDirection: "row", justifyContent: "space-around", paddingLeft: 20, paddingRight: 20, alignContent: "center", alignItems: "center" }}>
+                <Image source={isDay ? require('../assets/globe.png') : require('../assets/globe.png')}
                   style={{
                     width: 61,
                     height: 61,
                     resizeMode: 'contain',
                   }} />
+                <View>
+                  <Text style={!isDay ? styles.day : styles.night}>Longitude: {weather.lon}</Text>
+                  <Text style={!isDay ? styles.day : styles.night}>Latitude : {weather.lat}</Text>
+                </View>
               </View>
-            </View>
-            <View style={styles.details_bottom}></View>
-            
-            <Text style={isDay ? styles.day : styles.night}>Longitude: {weather.lon}</Text>
-            <Text style={isDay ? styles.day : styles.night}>Latitude : {weather.lat}</Text>
-            <Text style={isDay ? styles.day : styles.night}>Timezone : {weather.timezone}</Text>
-            <Text style={isDay ? styles.day : styles.night}>Pressure : {weather.pres} hPa</Text>
-          </ImageBackground>
-        </View>
+            </LinearGradient>
+
+            <LinearGradient colors={isDay ? ['#4c669f', 'black'] : ['#bee6ee', '#4c669f']} style={[styles.geo, { overflow: "hidden" }]}>
+              <Text style={[!isDay ? styles.day : styles.night, { fontWeight: "bold", fontSize: 30, textAlign: "center", borderBottomWidth: 2, borderColor: isDay ? 'black' : 'white' }, styles.text_shadow]}>PRESSURE</Text>
+              <View style={{ flexDirection: "row", justifyContent: "space-around", paddingLeft: 10, paddingRight: 20, alignContent: "center", alignItems: "center" }}>
+                <Image source={require('../assets/pressure-white.png')}
+                  style={{
+                    width: 61,
+                    height: 61,
+                    resizeMode: 'contain',
+                  }} />
+                <View>
+                  <Text style={[!isDay ? styles.day : styles.night, { fontWeight: "bold", fontSize: 20, }]}>{weather.pres} hPa</Text>
+                </View>
+              </View>
+            </LinearGradient>
+
+            <LinearGradient colors={isDay ? ['#4c669f', 'black'] : ['#bee6ee', '#4c669f']} style={[styles.geo, { overflow: "hidden" }]}>
+              <Text style={[!isDay ? styles.day : styles.night, { fontWeight: "bold", fontSize: 30, textAlign: "center", borderBottomWidth: 2, borderColor: isDay ? 'black' : 'white' }, styles.text_shadow]}>TIMEZONE</Text>
+              <View style={{ flexDirection: "row", justifyContent: "space-around", paddingLeft: 10, paddingRight: 20, alignContent: "center", alignItems: "center" }}>
+                <Image source={require('../assets/Timezone.png')}
+                  style={{
+                    width: 61,
+                    height: 61,
+                    resizeMode: 'contain',
+                  }} />
+                <View>
+                  <Text style={[!isDay ? styles.day : styles.night, { fontWeight: "bold", fontSize: 20, }]}>{weather.timezone}</Text>
+                </View>
+              </View>
+            </LinearGradient>
+
+          </View>
+          <TouchableOpacity style={{ width: 280, marginTop: 10,  borderRadius: 10, padding: 10, borderWidth: 2, borderColor: '#68ff9b', backgroundColor:'#68ff9b', alignContent: "center", justifyContent: "center", alignContent: "center" }}>
+            <Text style={{ textAlign: "center", color:'#4c669f' }} onPress={() => addToWatchList()}>ADD TO WATCHLIST</Text>
+          </TouchableOpacity>
+        </LinearGradient>
 
       </TouchableOpacity >
     );
@@ -101,6 +157,7 @@ function CheckScreen({ navigation }) {
                   onChangeText={text => onChangeText(text)}
                   value={value}
                   placeholder={'City..'}
+                  //editable={true}
                 />
                 <DropDownPicker
                   items={countriesWithCodesNEW}
@@ -128,7 +185,7 @@ function CheckScreen({ navigation }) {
               {!isReady ? <View /> :
                 <TouchableOpacity onPress={() => {
                   console.log('arrow');
-                  () => {this.scrollView.scrollToEnd()}
+                  () => { this.scrollView.scrollToEnd() }
                 }}>
                   <Image source={require('../assets/arrows.png')}
                     style={{
@@ -139,7 +196,7 @@ function CheckScreen({ navigation }) {
                 </TouchableOpacity>}
             </View>
           </LinearGradient>
-          {!isReady ? <View /> : <CityWeather weather={weather} ref={scrollView => this.scrollView = scrollView}/>}
+          {!isReady ? <View /> : <CityWeather weather={weather} ref={scrollView => this.scrollView = scrollView} />}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -160,14 +217,15 @@ const styles = StyleSheet.create({
     flex: 1,
     width: 360,
     flexDirection: 'column',
-    height: 360
+    height: 625,
+    alignItems: "center"
   },
   details_top: {
-    borderTopWidth: 3,
+    //borderTopWidth: 3,
     borderColor: 'white',
-    marginTop: 150,
-    flexDirection: "row",
-    //backgroundColor: 'red',
+    justifyContent: "center",
+    flexDirection: "column",
+    top: -19
   },
   image: {
     //flex: 1,
@@ -181,5 +239,30 @@ const styles = StyleSheet.create({
   },
   night: {
     color: 'white'
+  },
+  geo: {
+    flexDirection: "column",
+    borderRadius: 5,
+    //borderWidth: 2,
+    padding: 5,
+    marginTop: 10,
+    marginLeft: 10,
+    marginRight: 10,
+    //backgroundColor: 'lightgrey'
+
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.55,
+    shadowRadius: 2,
+
+    elevation: 5,
+  },
+  text_shadow: {
+    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+    textShadowOffset: { width: -1, height: 1 },
+    textShadowRadius: 5
   }
 });

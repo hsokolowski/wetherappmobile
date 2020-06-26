@@ -81,7 +81,7 @@ function ForecastScreen({ navigation }) {
         return (
             <TouchableOpacity onPress={() => {
                 console.log('push');
-                navigation.navigate('Details',weather);
+                navigation.navigate('Details',{weather,dayName});
             }}>
 
                 <View style={styles.container} >
