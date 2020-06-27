@@ -1,52 +1,64 @@
 /* eslint-disable prettier/prettier */
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, FlatList, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, Button, FlatList, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
 import firebase from '../firebase/firebase';
-
-var width = Dimensions.get('window').width; //full width
-var height = Dimensions.get('window').height; //full height
+import { key, api, forecast } from "../api/wetherbit"
+import { LinearGradient } from 'expo-linear-gradient';
 
 
 function ListScreen({ navigation }) {
 
-    const [cars, SetCars] = useState(0);
+    const [cities, SetCities] = useState(0);
     const [keys, SetKeys] = useState([]);
+    const [weather, setWeather] = useState(null)
+    const [language, setLanguage] = useState("en")
 
+    useEffect(() => {
+        firebase.database().ref('/cities').on('value', function (snapshot) {
+            var cities_result = [];
 
-    function getData( ){
-        console.log("DATA")
-        //SetCars(firebase.firestore().collection('cars'))
-        console.log(firebase.database().ref('/cars').on('value',function (snapshot) {
-            console.log("In Value");
-            console.log(snapshot);
-
-            console.log("Raw");
-            var cars_result = [];
-
-            snapshot.forEach(function(item) {
+            snapshot.forEach(function (item) {
                 var itemVal = item.val();
-                console.log(item.key)
-                cars_result.push(itemVal);
+                cities_result.push(itemVal);
             });
 
-            console.log(cars_result);
-            SetCars(cars_result)
-        }, function(error) {
+            SetCities(cities_result)
+        }, function (error) {
             console.error(error);
-        }))
+        })
+    }, []);
+
+    async function getWeatherApiAsync(favCity, country) {
+        try {
+            let response = await fetch(
+                api + `?city=${favCity}&country=${country}&lang=${language}&key=${key}`
+            );
+            let json = await response.json();
+            console.log(json.data[0])
+            //setWeather(json.data[0])
+            return json.data[0];
+        } catch (error) {
+            console.error(error);
+        }
     }
 
 
-    function Item({ car }) {
+    function Item({ city }) {
+
         return (
             <TouchableOpacity onPress={() => {
                 console.log('push');
-                navigation.navigate('Details',car);
+                navigation.navigate('Watch', { city });
             }}>
                 <View style={styles.container} >
                     <View style={styles.item}>
-                        <Text style={{fontWeight:"bold"}}>{car.carMark} {car.carModel}</Text>
-                        <Text style={styles.burn}> {car.burn}l </Text>
+                        {/* <Text style={{ fontWeight: "bold", textAlign: "center" }}>{city.city_name.toUpperCase()}</Text> */}
+                        <TextInput
+                            style={{ width: '100%', padding: 10, borderColor: 'lightgrey', borderWidth: 1, borderRadius: 5, backgroundColor: '#fafafa', textAlign: "center" }}
+                            value={city.city_name.toUpperCase()}
+                            placeholder={'City..'}
+                            editable={false}
+                        />
                     </View>
                 </View>
             </TouchableOpacity >
@@ -54,24 +66,15 @@ function ListScreen({ navigation }) {
     }
 
     return (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <Text>List Screen</Text>
-            <Button
-                title="Go to Home"
-                onPress={() => navigation.navigate('Add')}
-            />
-            <Button
-                title="Pobierz dane"
-                onPress={() => getData()}
-            />
+        <LinearGradient colors={['#7e89b1', '#4b6aa9', '#2a417b']} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
             <FlatList
                 style={{ marginTop: 15 }}
-                data={cars}
-                renderItem={({ item }) => <Item car={item} />}
-                keyExtractor={item => item.carId}
-                key = {item => item.carId}
+                data={cities}
+                renderItem={({ item }) => <Item city={item} />}
+                keyExtractor={item => item.id}
+                key={item => item.id}
             />
-        </View>
+        </LinearGradient>
     );
 }
 
@@ -82,25 +85,25 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: 'powderblue',
-        padding: 10,
+        padding: 1,
         textAlign: 'center',
         borderRadius: 15,
         marginBottom: 10,
         fontWeight: 'bold',
     },
-    burn :{
+    burn: {
         padding: 10,
         color: 'black',
-        fontWeight:'bold',
+        fontWeight: 'bold',
         backgroundColor: 'yellow',
         borderRadius: 10,
     },
-    item:{
-        flex:1,
+    item: {
+        flex: 1,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        width: 200,
+        width: 280,
         padding: 10,
     },
 });

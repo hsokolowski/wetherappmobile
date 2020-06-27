@@ -6,14 +6,14 @@ import firebase from '../firebase/firebase';
 import { LinearGradient } from 'expo-linear-gradient';
 import WeatherIcon from './WeatherIcon'
 
-function DetailsScreen({ navigation }) {
+function DetailsSingleScreen({ navigation }) {
 
     const [IsVisible, SetVisible] = useState(false);
     const [weather, SetWeather] = useState(navigation.getParam('weather'))
     const [dayName, SetDayName] = useState(navigation.getParam('dayName'))
-    const [date, setTime] = useState(new Date(weather.datetime));
+    const [date, setTime] = useState(new Date(weather.ts*1000));
 
-    let months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    let months = ["January", "February", "March", "April", "May", "June","July", "August", "September", "October", "November", "December"];
     let month = months[date.getMonth()]
 
     let scaleWindImg = 0.8
@@ -42,11 +42,11 @@ function DetailsScreen({ navigation }) {
             <SafeAreaView style={styles.container}>
                 <ScrollView >
                     <View >
-                        <View style={{ alignContent: "center", justifyContent: "space-between", alignItems: "center" }}>
+                        <View style={{alignContent: "center", justifyContent: "space-between", alignItems: "center"}}>
                             <Text style={[styles.text_white, styles.text_shadow, { fontSize: 30 }]}>{dayName}, {date.getDate()} {month} </Text>
                         </View>
                         <View style={styles.row}>
-                            <View style={[styles.cafels, { backgroundColor: '#fff8de', width: 165 }]}>
+                            <View style={[styles.cafels, { backgroundColor: '#fff8de', width: 165}]}>
                                 <View style={styles.text_shadow}>
                                     <Image source={require('../assets/sunrise.png')}
                                         style={{
@@ -56,9 +56,9 @@ function DetailsScreen({ navigation }) {
                                             borderRadius: 400 / 2,
                                         }} />
                                 </View>
-                                <Text style={styles.cafels_text}>{getTimeFromTS(weather.sunrise_ts)}</Text>
+                                <Text style={styles.cafels_text}>{weather.sunrise}</Text>
                             </View>
-                            <View style={[styles.cafels, { backgroundColor: '#fff8de', width: 165 }]}>
+                            <View style={[styles.cafels, { backgroundColor: '#fff8de', width: 165}]}>
                                 <View style={styles.text_shadow}>
                                     <Image source={require('../assets/sunset.png')}
                                         style={{
@@ -68,7 +68,7 @@ function DetailsScreen({ navigation }) {
                                             borderRadius: 400 / 2,
                                         }} />
                                 </View>
-                                <Text style={styles.cafels_text}>{getTimeFromTS(weather.sunset_ts)} </Text>
+                                <Text style={styles.cafels_text}>{weather.sunset} </Text>
                             </View>
                         </View>
                         <View style={[styles.row,]}>
@@ -76,14 +76,14 @@ function DetailsScreen({ navigation }) {
                                 <WeatherIcon name={weather.weather.icon} size={100} />
                                 <View style={{ flexDirection: "column", }}>
                                     <Text style={[styles.text_shadow, { fontSize: 20 }]}>{weather.temp + "\u2103"}</Text>
-                                    <Text style={[{ fontSize: 16, color: '#777777' }]}>{weather.app_min_temp + ' / ' + weather.app_max_temp + "\u2103"} Apparent</Text>
+                                    <Text style={[{ fontSize: 16, color: '#777777' }]}>{weather.app_temp + "\u2103"} Apparent</Text>
                                     <Text style={[{ fontSize: 14 }]}>{weather.weather.description}</Text>
                                 </View>
                             </View>
                         </View>
                         <View style={[styles.row,]}>
-                            <View style={[styles.cafels, { justifyContent: "space-between", alignItems: "center", alignContent: "center", backgroundColor: '#dee7ff', width: '100%', borderRadius: 50 }]}>
-                                <View style={[styles.cafels_column, { backgroundColor: '#dee7ff', width: 110, padding: 10, borderRadius: 40 }]}>
+                            <View style={[styles.cafels, { justifyContent: "space-around",alignItems: "center", alignContent: "center", backgroundColor: '#dee7ff', width: '100%', borderRadius: 50 }]}>
+                                {/* <View style={[styles.cafels_column, { backgroundColor: '#dee7ff', width: 110, padding: 10, borderRadius: 40 }]}>
                                     <View style={styles.text_shadow}>
                                         <Image source={require('../assets/rain.png')}
                                             style={{
@@ -94,7 +94,7 @@ function DetailsScreen({ navigation }) {
                                             }} />
                                     </View>
                                     <Text style={[{ fontSize: 18, marginLeft: 10, fontWeight: "bold" }]}>{weather.pop} %</Text>
-                                </View>
+                                </View> */}
                                 <View style={[styles.cafels_column, { backgroundColor: '#dee7ff', width: 110, padding: 10, borderRadius: 40 }]}>
                                     <View style={styles.text_shadow}>
                                         <Image source={require('../assets/measure.png')}
@@ -197,7 +197,7 @@ function DetailsScreen({ navigation }) {
                                         width: 47,
                                         height: 48,
                                         resizeMode: 'cover',
-                                    }} />
+                                        }} />
                                 <Text style={[{ fontSize: 20, textAlign: "center", fontWeight: "bold" }]}>{weather.uv.toFixed(2)} </Text>
                             </View>
                             <View style={[styles.cafels_column, { backgroundColor: '#f1f1f1', width: 105, padding: 14, borderRadius: 40 }]}>
@@ -206,15 +206,8 @@ function DetailsScreen({ navigation }) {
                                         width: 48,
                                         height: 48,
                                         resizeMode: 'cover',
-                                    }} />
-                                {weather.vis.toFixed(1) != '0.0'
-                                    ? <Text style={[{ fontSize: 20, textAlign: "center", fontWeight: "bold" }]}>{weather.vis.toFixed(1) + " KM"}</Text>
-                                    : <Image source={require('../assets/unlimited.png')}
-                                        style={{
-                                            width: 50,
-                                            height: 20,
-                                            //resizeMode: 'cover',
-                                        }} />}
+                                        }} />
+                                <Text style={[{ fontSize: 20, textAlign: "center", fontWeight: "bold" }]}>{weather.vis.toFixed(1)} KM</Text>
                             </View>
                         </View>
                     </View>
@@ -265,7 +258,7 @@ function DetailsScreen({ navigation }) {
     );
 }
 
-export default DetailsScreen;
+export default DetailsSingleScreen;
 
 const styles = StyleSheet.create({
     container: {

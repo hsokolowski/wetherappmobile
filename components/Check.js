@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Image, SafeAreaView, ScrollView, TouchableOpacity, StyleSheet, TextInput, ImageBackground, } from 'react-native';
+import { View, Text, Image, SafeAreaView, ScrollView, TouchableOpacity, StyleSheet, TextInput, Button, } from 'react-native';
 import firebase from '../firebase/firebase';
 import { key, api, forecast } from "../api/wetherbit"
 import Icon from "./ImageClip"
@@ -43,16 +43,18 @@ function CheckScreen({ navigation }) {
     }
   }
 
-  function addToWatchList(){
+  function addToWatchList() {
     console.log("add to db")
     var key = firebase.database().ref('/cities').push().key
 
     let city = {
-      city_name : value,
+      id: key,
+      city_name: value,
       country_code: countryCode
     }
 
     firebase.database().ref('/cities').child(key).set(city);
+    navigation.navigate('Hello')
   }
 
   function CityWeather({ weather }) {
@@ -131,8 +133,8 @@ function CheckScreen({ navigation }) {
             </LinearGradient>
 
           </View>
-          <TouchableOpacity style={{ width: 280, marginTop: 10,  borderRadius: 10, padding: 10, borderWidth: 2, borderColor: '#68ff9b', backgroundColor:'#68ff9b', alignContent: "center", justifyContent: "center", alignContent: "center" }}>
-            <Text style={{ textAlign: "center", color:'#4c669f' }} onPress={() => addToWatchList()}>ADD TO WATCHLIST</Text>
+          <TouchableOpacity style={{ width: 280, marginTop: 10, borderRadius: 10, padding: 10, borderWidth: 2, borderColor: '#68ff9b', backgroundColor: '#68ff9b', alignContent: "center", justifyContent: "center", alignContent: "center" }}>
+            <Text style={{ textAlign: "center", color: '#4c669f' }} onPress={() => addToWatchList()}>ADD TO WATCHLIST</Text>
           </TouchableOpacity>
         </LinearGradient>
 
@@ -155,9 +157,9 @@ function CheckScreen({ navigation }) {
                 <TextInput
                   style={{ width: '100%', padding: 10, borderColor: 'lightgrey', borderWidth: 1, borderRadius: 5, backgroundColor: '#fafafa' }}
                   onChangeText={text => onChangeText(text)}
-                  value={value}
+                  value={value.toUpperCase()}
                   placeholder={'City..'}
-                  //editable={true}
+                //editable={true}
                 />
                 <DropDownPicker
                   items={countriesWithCodesNEW}
