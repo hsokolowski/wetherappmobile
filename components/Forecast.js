@@ -28,27 +28,8 @@ function ForecastScreen({ navigation }) {
   const msgs = ['CYCLING', "JOGGING", 'WALK', 'a BARBECUE']
 
   useEffect(() => {
-    // firebase.database().ref('/fav').on('value', function (snapshot) {
-    //   var cities_result = [];
-
-    //   snapshot.forEach(function (item) {
-    //     var itemVal = item.val();
-    //     cities_result.push(itemVal);
-    //   });
-
-    //   setFavCity(cities_result[0].city_name)
-    //   setCountry(cities_result[0].country_code)
-
-    // }, function (error) {
-    //   console.error(error);
-    // })
-    //getWeatherApiAsync()
-    setDays(customData.data)
-    SetRCB(customData.data)
+    getWeatherApiAsync()
   }, []);
-  // useEffect(() => {
-  //   getWeatherApiAsync()
-  // },[]);
 
   async function getWeatherApiAsync() {
     try {

@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, Image, SafeAreaView, ScrollView, TouchableOpacity, StyleSheet, TextInput, Button, } from 'react-native';
 import firebase from '../firebase/firebase';
-import { key, api, forecast } from "../api/wetherbit"
+import { key, alerts, api } from "../api/wetherbit"
 import Icon from "./ImageClip"
 import { LinearGradient } from 'expo-linear-gradient';
 import DropDownPicker from 'react-native-dropdown-picker';
@@ -16,11 +16,31 @@ function CheckScreen({ navigation }) {
   const [countryCode, SetCountryCode] = useState(null)
   const [isReady, SetIsReady] = useState(false)
   const [isDay, SetIsDay] = useState(true)
+  const [alert, SetAlert] = useState(true)
   const countriesWithCodesNEW = require('../api/countries-new.json');
   let image = ""
 
+  function getData() {
+    getWeatherApiAsync()
+    getWeatherAlertAsync()
+  }
+
+  async function getWeatherAlertAsync() {
+    console.log(alerts + `?city=${value}&country=${countryCode}&lang=${language}&key=${key}`)
+    try {
+      let response = await fetch(
+        alerts + `?city=${value}&country=${countryCode}&lang=${language}&key=${key}`
+      );
+      let json = await response.json();
+      console.log(json.alerts)
+      SetAlert(json.alerts[0].description)
+      return json.alerts[0];
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   async function getWeatherApiAsync() {
-    console.log(api + `?city=${value}&country=${countryCode}&lang=${language}&key=${key}`)
     try {
       let response = await fetch(
         api + `?city=${value}&country=${countryCode}&lang=${language}&key=${key}`
@@ -66,79 +86,74 @@ function CheckScreen({ navigation }) {
     let dayName = days[date.getDay()];
 
     return (
-      <TouchableOpacity onPress={() => {
-        console.log('push');
-        navigation.navigate('Details', { weather });
-      }}>
-
-        <LinearGradient colors={isDay ? ['#bee6ee', '#4c669f'] : ['black', 'grey']} style={[styles.details]} >
-          {/* <ImageBackground source={image} style={styles.image}> */}
+      <LinearGradient colors={isDay ? ['#bee6ee', '#4c669f'] : ['black', 'grey']} style={[styles.details]} >
+        <TouchableOpacity onPress={() => {
+          console.log('push');
+          navigation.navigate('Details', { weather });
+        }}>
           <View style={styles.details_top}>
-            <Text style={[isDay ? styles.day : styles.night, { textAlign: "center", fontSize: 25 }, styles.text_shadow]}>{isDay ? 'Day' : 'Night'} in {value}, {countryCode}</Text>
+            <Text style={[isDay ? styles.day : styles.night, { textAlign: "center", fontSize: 25 }]}>{isDay ? 'Day' : 'Night'} in {value}, {countryCode}</Text>
             <View style={{ justifyContent: "center", alignContent: "center", alignItems: "center" }}>
               <View style={{ flexDirection: "row", justifyContent: "center", alignContent: "center", alignItems: "center" }}>
                 <WeatherIcon name={weather.weather.icon} size={100} />
-                <Text style={[isDay ? styles.day : styles.night, { fontSize: 60, fontWeight: "bold" }, styles.text_shadow]}>{weather.temp + "\u2103"}</Text>
+                <Text style={[isDay ? styles.day : styles.night, { fontSize: 60, fontWeight: "bold" }]}>{weather.temp + "\u2103"}</Text>
               </View>
               <View>
-                <Text style={[isDay ? styles.day : styles.night, { fontSize: 30, }, styles.text_shadow]}>{weather.weather.description}</Text>
+                <Text style={[isDay ? styles.day : styles.night, { fontSize: 30, }]}>{weather.weather.description}</Text>
               </View>
             </View>
           </View>
-          <View style={styles.details_bottom}>
-            <LinearGradient colors={isDay ? ['#4c669f', 'black'] : ['#bee6ee', '#4c669f']} style={[styles.geo, { overflow: "hidden" }]}>
-              <Text style={[!isDay ? styles.day : styles.night, { fontWeight: "bold", fontSize: 30, textAlign: "center", borderBottomWidth: 2, borderColor: isDay ? 'black' : 'white' }, styles.text_shadow]}>GEOLOCALIZATION</Text>
-              <View style={{ flexDirection: "row", justifyContent: "space-around", paddingLeft: 20, paddingRight: 20, alignContent: "center", alignItems: "center" }}>
-                <Image source={isDay ? require('../assets/globe.png') : require('../assets/globe.png')}
-                  style={{
-                    width: 61,
-                    height: 61,
-                    resizeMode: 'contain',
-                  }} />
-                <View>
-                  <Text style={!isDay ? styles.day : styles.night}>Longitude: {weather.lon}</Text>
-                  <Text style={!isDay ? styles.day : styles.night}>Latitude : {weather.lat}</Text>
-                </View>
+
+        </TouchableOpacity >
+        <View style={styles.details_bottom}>
+          <LinearGradient colors={isDay ? ['#4c669f', 'black'] : ['#bee6ee', '#4c669f']} style={[styles.geo, { overflow: "hidden" }]}>
+            <Text style={[!isDay ? styles.day : styles.night, { fontWeight: "bold", fontSize: 30, textAlign: "center", borderBottomWidth: 2, borderColor: isDay ? 'black' : 'white' }, styles.text_shadow]}>GEOLOCALIZATION</Text>
+            <View style={{ flexDirection: "row", justifyContent: "space-around", paddingLeft: 20, paddingRight: 20, alignContent: "center", alignItems: "center" }}>
+              <Image source={isDay ? require('../assets/globe.png') : require('../assets/globe.png')}
+                style={{
+                  width: 61,
+                  height: 61,
+                  resizeMode: 'contain',
+                }} />
+              <View>
+                <Text style={!isDay ? styles.day : styles.night}>Longitude: {weather.lon}</Text>
+                <Text style={!isDay ? styles.day : styles.night}>Latitude : {weather.lat}</Text>
               </View>
-            </LinearGradient>
-
-            <LinearGradient colors={isDay ? ['#4c669f', 'black'] : ['#bee6ee', '#4c669f']} style={[styles.geo, { overflow: "hidden" }]}>
-              <Text style={[!isDay ? styles.day : styles.night, { fontWeight: "bold", fontSize: 30, textAlign: "center", borderBottomWidth: 2, borderColor: isDay ? 'black' : 'white' }, styles.text_shadow]}>PRESSURE</Text>
-              <View style={{ flexDirection: "row", justifyContent: "space-around", paddingLeft: 10, paddingRight: 20, alignContent: "center", alignItems: "center" }}>
-                <Image source={require('../assets/pressure-white.png')}
-                  style={{
-                    width: 61,
-                    height: 61,
-                    resizeMode: 'contain',
-                  }} />
-                <View>
-                  <Text style={[!isDay ? styles.day : styles.night, { fontWeight: "bold", fontSize: 20, }]}>{weather.pres} hPa</Text>
-                </View>
+            </View>
+          </LinearGradient>
+          <LinearGradient colors={isDay ? ['#4c669f', 'black'] : ['#bee6ee', '#4c669f']} style={[styles.geo, { overflow: "hidden" }]}>
+            <Text style={[!isDay ? styles.day : styles.night, { fontWeight: "bold", fontSize: 30, textAlign: "center", borderBottomWidth: 2, borderColor: isDay ? 'black' : 'white' }, styles.text_shadow]}>TIMEZONE</Text>
+            <View style={{ flexDirection: "row", justifyContent: "space-around", paddingLeft: 10, paddingRight: 20, alignContent: "center", alignItems: "center" }}>
+              <Image source={require('../assets/Timezone.png')}
+                style={{
+                  width: 61,
+                  height: 61,
+                  resizeMode: 'contain',
+                }} />
+              <View>
+                <Text style={[!isDay ? styles.day : styles.night, { fontWeight: "bold", fontSize: 20, }]}>{weather.timezone}</Text>
               </View>
-            </LinearGradient>
+            </View>
+          </LinearGradient>
+          <LinearGradient colors={isDay ? ['#4c669f', 'black'] : ['#bee6ee', '#4c669f']} style={[styles.geo, { overflow: "hidden", }]}>
+            <Text style={[!isDay ? styles.day : styles.night, { fontWeight: "bold", fontSize: 30, textAlign: "center", borderBottomWidth: 2, borderColor: isDay ? 'black' : 'white' }, styles.text_shadow]}>ALERTS</Text>
+            <View style={{ flexDirection: "row", justifyContent: "space-around", paddingLeft: 10, paddingRight: 20, alignContent: "center", alignItems: "center" }}>
+              <SafeAreaView style={styles.container2}>
+                <ScrollView style={styles.scrollView}>
+                  <View>
+                    <Text style={[!isDay ? styles.day : styles.night, { fontSize: 16, }]}>{alert.split('\nenglish:  ')[1]} </Text>
+                  </View>
+                </ScrollView>
+              </SafeAreaView>
+            </View>
+          </LinearGradient>
 
-            <LinearGradient colors={isDay ? ['#4c669f', 'black'] : ['#bee6ee', '#4c669f']} style={[styles.geo, { overflow: "hidden" }]}>
-              <Text style={[!isDay ? styles.day : styles.night, { fontWeight: "bold", fontSize: 30, textAlign: "center", borderBottomWidth: 2, borderColor: isDay ? 'black' : 'white' }, styles.text_shadow]}>TIMEZONE</Text>
-              <View style={{ flexDirection: "row", justifyContent: "space-around", paddingLeft: 10, paddingRight: 20, alignContent: "center", alignItems: "center" }}>
-                <Image source={require('../assets/Timezone.png')}
-                  style={{
-                    width: 61,
-                    height: 61,
-                    resizeMode: 'contain',
-                  }} />
-                <View>
-                  <Text style={[!isDay ? styles.day : styles.night, { fontWeight: "bold", fontSize: 20, }]}>{weather.timezone}</Text>
-                </View>
-              </View>
-            </LinearGradient>
+        </View>
+        <TouchableOpacity style={{ width: 280, marginTop: 10, borderRadius: 10, padding: 10, borderWidth: 2, borderColor: '#68ff9b', backgroundColor: '#68ff9b', alignContent: "center", justifyContent: "center", alignContent: "center" }}>
+          <Text style={{ textAlign: "center", color: '#4c669f' }} onPress={() => addToWatchList()}>ADD TO WATCHLIST</Text>
+        </TouchableOpacity>
+      </LinearGradient>
 
-          </View>
-          <TouchableOpacity style={{ width: 280, marginTop: 10, borderRadius: 10, padding: 10, borderWidth: 2, borderColor: '#68ff9b', backgroundColor: '#68ff9b', alignContent: "center", justifyContent: "center", alignContent: "center" }}>
-            <Text style={{ textAlign: "center", color: '#4c669f' }} onPress={() => addToWatchList()}>ADD TO WATCHLIST</Text>
-          </TouchableOpacity>
-        </LinearGradient>
-
-      </TouchableOpacity >
     );
   }
 
@@ -156,8 +171,8 @@ function CheckScreen({ navigation }) {
               <View style={{ alignItems: 'center', justifyContent: 'space-around', width: 320, padding: 10, flexDirection: "column" }}>
                 <TextInput
                   style={{ width: '100%', padding: 10, borderColor: 'lightgrey', borderWidth: 1, borderRadius: 5, backgroundColor: '#fafafa' }}
-                  onChangeText={text => onChangeText(text)}
-                  value={value.toUpperCase()}
+                  onChangeText={text => onChangeText(text.toUpperCase())}
+                  value={value}
                   placeholder={'City..'}
                 //editable={true}
                 />
@@ -180,25 +195,20 @@ function CheckScreen({ navigation }) {
 
               </View>
               <TouchableOpacity style={{ width: 300, borderRadius: 10, padding: 10, borderWidth: 2, borderColor: 'white', alignContent: "center", justifyContent: "center", alignContent: "center" }}>
-                <Text style={{ textAlign: "center", color: 'white' }} onPress={() => getWeatherApiAsync()}>SHOW WEATHER</Text>
+                <Text style={{ textAlign: "center", color: 'white' }} onPress={() => getData()}>SHOW WEATHER</Text>
               </TouchableOpacity>
             </View>
             <View style={{ flex: 1, alignItems: 'center', alignContent: "center", justifyContent: "center", height: 470 }}>
               {!isReady ? <View /> :
-                <TouchableOpacity onPress={() => {
-                  console.log('arrow');
-                  () => { this.scrollView.scrollToEnd() }
-                }}>
-                  <Image source={require('../assets/arrows.png')}
-                    style={{
-                      width: 61,
-                      height: 61,
-                      resizeMode: 'contain',
-                    }} />
-                </TouchableOpacity>}
+                <Image source={require('../assets/arrows.png')}
+                  style={{
+                    width: 61,
+                    height: 61,
+                    resizeMode: 'contain',
+                  }} />}
             </View>
           </LinearGradient>
-          {!isReady ? <View /> : <CityWeather weather={weather} ref={scrollView => this.scrollView = scrollView} />}
+          {!isReady ? <View /> : <CityWeather weather={weather} />}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -215,11 +225,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     justifyContent: "center"
   },
+  container2: {
+    textAlign: 'center',
+    justifyContent: "center"
+  },
   details: {
     flex: 1,
     width: 360,
     flexDirection: 'column',
-    height: 625,
+    height: 725,
     alignItems: "center"
   },
   details_top: {
