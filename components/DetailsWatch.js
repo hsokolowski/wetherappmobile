@@ -58,11 +58,16 @@ function DetailsWatchScreen({ navigation }) {
             <SafeAreaView style={styles.container}>
                 <ScrollView >
                     <View >
-                        <View style={{ alignContent: "center", justifyContent: "space-between", alignItems: "center" }}>
+                        <View style={{ alignContent: "center", justifyContent: "center", alignItems: "center", flexDirection: "row" }}>
                             <Text style={[styles.text_white, styles.text_shadow, { fontSize: 30 }]}>{navigation.getParam('city').city_name.toUpperCase()} </Text>
-                            <Icon
-                                name='star'
-                                color='#00aced' />
+                            <View>
+                                <Icon
+                                    name='star'
+                                    color='#ffda00'
+                                    size={35}
+                                    onPress={() => SetVisible(true)} />
+                            </View>
+
                         </View>
                         <View style={styles.row}>
                             <View style={[styles.cafels, { backgroundColor: '#fff8de', width: 165 }]}>
@@ -249,25 +254,28 @@ function DetailsWatchScreen({ navigation }) {
                         footer={
                             <DialogFooter>
                                 <DialogButton
-                                    text="CANCEL"
+                                    text="NO"
                                     onPress={() => { SetVisible(false) }}
                                 />
                                 <DialogButton
-                                    text="OK"
+                                    text="YES"
                                     onPress={() => {
                                         console.log('delete')
-                                        firebase.database().ref('/cars/' + navigation.getParam('carId')).set(null)
-
-                                        navigation.navigate('List')
+                                        firebase.database().ref('/cities/' + navigation.getParam('city').id).set(null)
+                                        SetVisible(false)
+                                        navigation.navigate('Watchlist')
                                     }}
                                 />
                             </DialogFooter>
                         }
                     >
                         <DialogContent>
-                            <Text>
-                                Na pewno chcesz usunać?
-                       </Text>
+                            <View style={{justifyContent: "center", alignItems: "center", alignContent: "center", padding: 20}}>
+                                <Text style={{fontSize: 17}}>
+                                    Are you sure you want to delete?
+                                </Text>
+                            </View>
+
                         </DialogContent>
                     </Dialog>
                 </ScrollView>

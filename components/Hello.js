@@ -62,6 +62,10 @@ function HomeScreen({ navigation }) {
       console.log(json.data[0])
       setWeather(json.data[0])
 
+      setTemperature(json.data[0].temp)
+      setWeatherCode(json.data[0].weather.icon)
+      setWeatherDescription(json.data[0].weather.description)
+
       return json.data[0];
     } catch (error) {
       console.error(error);
@@ -87,7 +91,10 @@ function HomeScreen({ navigation }) {
 
   }
 
-
+if(weather==null)
+{
+  return <LinearGradient colors={['#192f6a', '#3b5998', '#4c669f']} style={{ flex: 1, overflow: "hidden", margin: 0, width: 400, paddingTop: 20, }}></LinearGradient>
+}
 
   return (
     <View style={styles.container}>
